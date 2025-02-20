@@ -33,6 +33,29 @@ const PrefectureCheckboxList =() => {
       .catch((error) => console.error('データ取得の失敗:', error))
   }, [])
 
+  const [ populationData, setPopulationData ] = useState({})
+  const fetchPopulationData = (prefCode: number) => {
+    fetch(
+      `https://yumemi-frontend-engineer-codecheck-api.vercel.app/api/v1/population/composition/perYear?prefCode=${prefCode}`, 
+      {
+        method: "GET",
+        headers: {
+          'X-API-KEY': import.meta.env.VITE_RESAS_API_KEY,
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log({prefCode}, data);
+        setPopulationData((prevData) => ({
+          ...prevData, //すでにあるデータを維持
+          [prefCode]: data.result, //新しいデータの追加
+        }))
+      })
+      .catch((error) => console.error(`人口データ取得失敗：`, error))
+  }
+
   //checkboxのOn,Offを切り替える
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const prefCode = Number(event.target.value)
@@ -42,7 +65,7 @@ const PrefectureCheckboxList =() => {
     if (event.target.checked) {
       setselectedPrefs([...selectedPrefs, prefCode])
       //selectedPrefs の配列をコピー（...selectedPrefs）して、新しい prefCode を追加！
-      //
+      fetchPopulationData(prefCode)
     } else {
       setselectedPrefs(selectedPrefs.filter((selectedPref) => selectedPref !== prefCode))
       //prefCodeでないものを消す
@@ -82,6 +105,9 @@ const PrefectureCheckboxList =() => {
               ).join(', ')
           : 'なし'}
       </p>
+
+      <h3>人口データ：</h3>
+      
     </div>
   )
 }
