@@ -1,14 +1,22 @@
-import { useState, useEffect } from "react"
-import PopulationChart from "./PopulationChart"
+import { useState, useEffect } from 'react'
 
 type Prefecture = {
-    prefCode: number;
-    prefName: string;
+  prefCode: number
+  prefName: string
 }
 
-const PrefectureCheckboxList =() => {
+// Propsの型を定義（App.tsx から受け取る関数）
+type Props = {
+  setMergedData: (data: any) => void
+  setSelectedPrefNames: (names: string[]) => void
+}
+
+const PrefectureCheckboxList = ({
+  setMergedData,
+  setSelectedPrefNames,
+}: Props) => {
   const [prefectures, setPrefectures] = useState<Prefecture[]>([])
-  const [selectedPrefs, setselectedPrefs] = useState<number[]>([])
+  const [selectedPrefs, setSelectedPrefs] = useState<number[]>([])
   //都道府県の選択状況を管理するためのコード
 
   useEffect(() => {
@@ -37,11 +45,14 @@ const PrefectureCheckboxList =() => {
   const [populationData, setPopulationData] = useState<{
     [key: number]: { data: any[] } | undefined
   }>({})
+  // console.log(populationData);
+  
+  // 人口データを取得する関数
   const fetchPopulationData = (prefCode: number) => {
     fetch(
-      `https://yumemi-frontend-engineer-codecheck-api.vercel.app/api/v1/population/composition/perYear?prefCode=${prefCode}`, 
+      `https://yumemi-frontend-engineer-codecheck-api.vercel.app/api/v1/population/composition/perYear?prefCode=${prefCode}`,
       {
-        method: "GET",
+        method: 'GET',
         headers: {
           'X-API-KEY': import.meta.env.VITE_RESAS_API_KEY,
           'Content-Type': 'application/json',
@@ -50,10 +61,10 @@ const PrefectureCheckboxList =() => {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log({prefCode}, data);
+        console.log({ prefCode }, data)
         setPopulationData((prevData) => ({
-          ...prevData, //すでにあるデータを維持
-          [prefCode]: data.result, //新しいデータの追加
+          ...prevData, // すでにあるデータを維持
+          [prefCode]: data.result, // 新しいデータの追加
         }))
       })
       .catch((error) => console.error(`人口データ取得失敗：`, error))
@@ -66,14 +77,59 @@ const PrefectureCheckboxList =() => {
     // valueは文字列だからNumberで数値に変換
 
     if (event.target.checked) {
-      setselectedPrefs([...selectedPrefs, prefCode])
+      setSelectedPrefs([...selectedPrefs, prefCode])
       //selectedPrefs の配列をコピー（...selectedPrefs）して、新しい prefCode を追加！
       fetchPopulationData(prefCode)
     } else {
-      setselectedPrefs(selectedPrefs.filter((selectedPref) => selectedPref !== prefCode))
+      setSelectedPrefs(
+        selectedPrefs.filter((selectedPref) => selectedPref !== prefCode),
+      )
       //prefCodeでないものを消す
     }
   }
+  
+  // mergedData を作成して App.tsx に渡す
+  useEffect(() => {
+    if (selectedPrefs.length === 0) {
+      setMergedData([]) // チェックがない場合は空配列
+      return
+    }
+    console.log(populationData);
+    
+
+    const mergedData =
+      populationData[selectedPrefs[0]]?.data?.map((item) => {
+        const newData: { [key: string]: number | string } = { year: item.year } // 年を追加
+
+        selectedPrefs.forEach((prefCode) => {
+          const popData = populationData[prefCode]?.data?.find(
+            (cat) => cat.label === '総人口',
+          )?.data
+          if (popData) {
+            const yearData = popData.find((p) => p.year === item.year)
+            newData[
+              prefectures.find((p) => p.prefCode === prefCode)?.prefName ||
+                '不明'
+            ] = yearData ? yearData.value : 0
+          }
+        })
+
+        return newData
+      }) || []
+
+    // console.log('populationDataの中身:', populationData)
+    console.log('修正後の統合データ:', mergedData) // デバッグ用
+    setMergedData(mergedData)
+
+    // 都道府県名リストを更新
+    setSelectedPrefNames(
+      selectedPrefs.map(
+        (prefCode) =>
+          prefectures.find((p) => p.prefCode === prefCode)?.prefName || '不明',
+      ),
+    )
+  }, [selectedPrefs, populationData])
+
 
   return (
     <div>
@@ -109,47 +165,6 @@ const PrefectureCheckboxList =() => {
               .join(', ')
           : 'なし'}
       </p>
-
-      <h3>人口データ：</h3>
-      {/* チェックがない時のメッセージ */}
-      {selectedPrefs.length === 0 && <p>データ取得中...</p>}
-
-      {/* 都道府県が表示されているときの表示 */}
-      {selectedPrefs.map((selectedPref) => {
-        const prefecture = prefectures.find(
-          (prefecture) => prefecture.prefCode === selectedPref,
-          //find() を使うと、一致する prefecture オブジェクトが取得できる
-        ) // 都道府県情報を取得
-        const population = populationData[selectedPref]?.data || [] // 選択した都道府県の人口データを取得
-        //?.（オプショナルチェーン）を使い、データがない場合 undefined にする
-
-        console.log('populationの値:', population)
-
-        return (
-          <div key={selectedPref}>
-            <h4>{prefecture?.prefName}</h4> {/* 都道府県名を表示 */}
-            {/* ?.はエラーを返した時、エラーにならなくなる  */}
-            {/* {/* {population ? ( // データがある場合 */}
-              {/* <ul>
-                {population.map((category: any) => (
-                  //populationは配列で、populationの中のcategoryっていう位置付け
-                  <li key={category.label}>
-                    {category.label}: {JSON.stringify(category.data)}
-                    //カテゴリごとのデータを JSON 形式で文字列として表示する */}
-                  {/* {/* </li> */}
-                {/* ))} */} 
-               {/* </ul> */}
-            {population.length > 0 ? (
-              <PopulationChart
-                data={population.find((category) => category.label === "総人口")?.data || []}
-                title={prefecture?.prefName || "不明"}
-              />
-            ) : (
-              <p>データ取得中...</p> // データがまだ取得できていない場合
-            )}
-          </div>
-        )
-      })}
     </div>
   )
 }
