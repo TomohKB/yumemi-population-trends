@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import PopulationChart from "./PopulationChart"
 
 type Prefecture = {
     prefCode: number;
@@ -33,7 +34,9 @@ const PrefectureCheckboxList =() => {
       .catch((error) => console.error('データ取得の失敗:', error))
   }, [])
 
-  const [ populationData, setPopulationData ] = useState({})
+  const [populationData, setPopulationData] = useState<{
+    [key: number]: { data: any[] } | undefined
+  }>({})
   const fetchPopulationData = (prefCode: number) => {
     fetch(
       `https://yumemi-frontend-engineer-codecheck-api.vercel.app/api/v1/population/composition/perYear?prefCode=${prefCode}`, 
@@ -102,12 +105,51 @@ const PrefectureCheckboxList =() => {
                 //pref.prefCode と selectedPref（チェックされたID）を比較
                 //一致したら pref を返す！
                 //?.は、「もし undefined ならエラーを出さずに undefined を返す」
-              ).join(', ')
+              )
+              .join(', ')
           : 'なし'}
       </p>
 
       <h3>人口データ：</h3>
-      
+      {/* チェックがない時のメッセージ */}
+      {selectedPrefs.length === 0 && <p>データ取得中...</p>}
+
+      {/* 都道府県が表示されているときの表示 */}
+      {selectedPrefs.map((selectedPref) => {
+        const prefecture = prefectures.find(
+          (prefecture) => prefecture.prefCode === selectedPref,
+          //find() を使うと、一致する prefecture オブジェクトが取得できる
+        ) // 都道府県情報を取得
+        const population = populationData[selectedPref]?.data || [] // 選択した都道府県の人口データを取得
+        //?.（オプショナルチェーン）を使い、データがない場合 undefined にする
+
+        console.log('populationの値:', population)
+
+        return (
+          <div key={selectedPref}>
+            <h4>{prefecture?.prefName}</h4> {/* 都道府県名を表示 */}
+            {/* ?.はエラーを返した時、エラーにならなくなる  */}
+            {/* {/* {population ? ( // データがある場合 */}
+              {/* <ul>
+                {population.map((category: any) => (
+                  //populationは配列で、populationの中のcategoryっていう位置付け
+                  <li key={category.label}>
+                    {category.label}: {JSON.stringify(category.data)}
+                    //カテゴリごとのデータを JSON 形式で文字列として表示する */}
+                  {/* {/* </li> */}
+                {/* ))} */} 
+               {/* </ul> */}
+            {population.length > 0 ? (
+              <PopulationChart
+                data={population.find((category) => category.label === "総人口")?.data || []}
+                title={prefecture?.prefName || "不明"}
+              />
+            ) : (
+              <p>データ取得中...</p> // データがまだ取得できていない場合
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }
