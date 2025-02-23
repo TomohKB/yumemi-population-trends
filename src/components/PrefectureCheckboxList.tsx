@@ -5,9 +5,28 @@ type Prefecture = {
   prefName: string
 }
 
+type PopulationEntry = {
+  year: number;
+  [key: string]: number | string;
+}
+
+type PopulationDetail = {
+  year: number
+  value: number
+}
+
+type PopulationCategory = {
+  label: string
+  data: PopulationDetail[]
+}
+
+type PopulationData = {
+  [key: number]: { data: PopulationCategory[] } | undefined
+}
+
 // Propsの型を定義（App.tsx から受け取る関数）
 type Props = {
-  setMergedData: (data: any) => void
+  setMergedData: (data: PopulationEntry) => void
   setSelectedPrefNames: (names: string[]) => void
   selectedCategory: string
   setSelectedCategory: (category: string) => void
@@ -46,9 +65,7 @@ const PrefectureCheckboxList = ({
       .catch((error) => console.error('データ取得の失敗:', error))
   }, [])
 
-  const [populationData, setPopulationData] = useState<{
-    [key: number]: { data: any[] } | undefined
-  }>({})
+  const [populationData, setPopulationData] = useState<{ PopulationData }>({})
   // console.log(populationData);
 
   // 人口データを取得する関数
@@ -171,7 +188,7 @@ const PrefectureCheckboxList = ({
   return (
     <div>
       <h2>都道府県の選択</h2>
-      <div
+      <div className='prefecture-list'
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', // 自動調整のグリッド
@@ -203,7 +220,7 @@ const PrefectureCheckboxList = ({
         ))}
       </div>
       <h3>人口の種類</h3>
-      <div>
+      <div className='radio-group'>
         {populationCategories.map((category) => (
           <label key={category}>
             <input

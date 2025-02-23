@@ -40,3 +40,42 @@
 .read-the-docs {
   color: #888;
 }
+
+.prefecture-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media screen and (max-width: 600px) {
+  .prefecture-list {
+    flex-direction: column;
+  }
+}
+
+.chart-container {
+  width: 100%;
+  max-width: 1200px; /* PCでの最大幅 */
+  min-width: 300px; /* スマホで見切れないように */
+  margin: auto; /* 中央揃え */
+}
+
+/* スマホ（600px以下）のとき */
+@media screen and (max-width: 600px) {
+  .chart-container {
+    max-width: 100%; /* スマホでは横幅いっぱい */
+    padding: 0 10px; /* 余白を少し確保 */
+  }
+}
+
+.radio-group {
+  /* display: flex; */
+  align-items: center;
+  gap: 10px;
+}
+
+@media screen  and (max-width: 600px) {
+  .radio-group {
+    flex-direction: column;
+  }
+}
