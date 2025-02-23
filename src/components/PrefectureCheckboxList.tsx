@@ -9,11 +9,15 @@ type Prefecture = {
 type Props = {
   setMergedData: (data: any) => void
   setSelectedPrefNames: (names: string[]) => void
+  selectedCategory: string
+  setSelectedCategory: (category: string) => void
 }
 
 const PrefectureCheckboxList = ({
   setMergedData,
   setSelectedPrefNames,
+  selectedCategory,
+  setSelectedCategory,
 }: Props) => {
   const [prefectures, setPrefectures] = useState<Prefecture[]>([])
   const [selectedPrefs, setSelectedPrefs] = useState<number[]>([])
@@ -31,7 +35,7 @@ const PrefectureCheckboxList = ({
           'Content-Type': 'application/json',
           //「リクエストの中身（データの種類）をサーバーに伝えるヘッダー」
         },
-      },
+      }
     )
       .then((res) => res.json())
       .then((data) => {
@@ -57,7 +61,7 @@ const PrefectureCheckboxList = ({
           'X-API-KEY': import.meta.env.VITE_RESAS_API_KEY,
           'Content-Type': 'application/json',
         },
-      },
+      }
     )
       .then((res) => res.json())
       .then((data) => {
@@ -82,7 +86,7 @@ const PrefectureCheckboxList = ({
       fetchPopulationData(prefCode)
     } else {
       setSelectedPrefs(
-        selectedPrefs.filter((selectedPref) => selectedPref !== prefCode),
+        selectedPrefs.filter((selectedPref) => selectedPref !== prefCode)
       )
       //prefCodeでないものを消す
     }
@@ -96,10 +100,10 @@ const PrefectureCheckboxList = ({
       setMergedData([]) // チェックがない場合は空配列
       return
     }
-    
+
     console.log('現在の selectedPrefs:', selectedPrefs)
     console.log('現在の populationData:', populationData)
-  
+
     const mergedData =
       populationData[selectedPrefs[0]]?.data
         ?.find((category) => category.label === '総人口')
@@ -115,7 +119,7 @@ const PrefectureCheckboxList = ({
             // console.log(`現在の ${selectedPref} のデータ:`, populationData[selectedPref]?.data);
             // console.log(`現在処理中の都道府県コード:`, selectedPref)
             const popData = populationData[selectedPref]?.data?.find(
-              (category) => category.label === '総人口',
+              (category) => category.label === selectedCategory
             )?.data //dataがあったらpopDataに入る
             // console.log('現在の総人口データ:', popData)
             if (popData) {
@@ -125,7 +129,7 @@ const PrefectureCheckboxList = ({
               // )
               // console.log(`item.year: ${item.year}`)
               const matchedYearData = popData.find(
-                (p) => p.year === yearData.year,
+                (p) => p.year === yearData.year
               )
               // console.log(`年 ${item.year} のデータ:`, yearData)
               //popDataのp.yearとitem.yearが同じだったら格納する
@@ -144,25 +148,51 @@ const PrefectureCheckboxList = ({
           return newData
         }) || []
 
-      console.log('現在の mergedData:', mergedData)
-      
+    console.log('現在の mergedData:', mergedData)
+
     setMergedData(mergedData)
 
     // 都道府県名リストを更新
     setSelectedPrefNames(
       selectedPrefs.map(
         (prefCode) =>
-          prefectures.find((p) => p.prefCode === prefCode)?.prefName || '不明',
-      ),
+          prefectures.find((p) => p.prefCode === prefCode)?.prefName || '不明'
+      )
     )
-  }, [selectedPrefs, populationData])
+  }, [selectedPrefs, populationData, selectedCategory])
+
+  const populationCategories = [
+    '総人口',
+    '年少人口',
+    '生産年齢人口',
+    '老年人口',
+  ]
 
   return (
     <div>
       <h2>都道府県の選択</h2>
-      <div>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', // 自動調整のグリッド
+          gap: '8px', // 各都道府県の間隔
+          maxWidth: '1000px',
+          margin: '0 auto', // 中央寄せ
+        }}
+      >
         {prefectures.map((prefecture) => (
           <label key={prefecture.prefCode}>
+            <label
+              key={prefecture.prefCode}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '4px',
+                borderRadius: '4px',
+                transition: 'background 0.2s',
+              }}
+            ></label>
             <input
               type="checkbox"
               value={prefecture.prefCode}
@@ -172,7 +202,20 @@ const PrefectureCheckboxList = ({
           </label>
         ))}
       </div>
-
+      <h3>人口の種類</h3>
+      <div>
+        {populationCategories.map((category) => (
+          <label key={category}>
+            <input
+              type="radio"
+              value={category}
+              checked={selectedCategory === category}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            />
+            {category}
+          </label>
+        ))}
+      </div>
       <h3>選択中の都道府県：</h3>
       <p>
         {selectedPrefs.length > 0
@@ -181,8 +224,8 @@ const PrefectureCheckboxList = ({
               .map(
                 (selectedPref) =>
                   prefectures.find(
-                    (prefecture) => prefecture.prefCode === selectedPref,
-                  )?.prefName,
+                    (prefecture) => prefecture.prefCode === selectedPref
+                  )?.prefName
                 //prefectures のリストを 1つずつ調べる
                 //pref.prefCode と selectedPref（チェックされたID）を比較
                 //一致したら pref を返す！

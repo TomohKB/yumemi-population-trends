@@ -23,9 +23,17 @@ const PopulationChart = ({ data, selectedPrefNames }: Props) => {
     <div>
       <h3>人口推移データ</h3>
       <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data}>
+        <LineChart
+          data={data}
+          margin={{ top: 20, right: 30, left: 90, bottom: 30 }} // 左側の余白を増やす
+        >
           <XAxis dataKey="year" stroke="#ffffff" /> {/* X軸のラベルを白に */}
-          <YAxis stroke="#ffffff" /> {/* Y軸のラベルを白に */}
+          <YAxis
+            stroke="#ffffff" // Y軸のラベルを白に
+            width={80} // Y軸のラベル用スペースを増やす
+            tickFormatter={(value) => value.toLocaleString()} // 数字をカンマ区切りにする
+            allowDecimals={false} // 小数点を表示しない
+          />
           <Tooltip />
           <Legend />
           {selectedPrefNames.map((selectedPrefName, index) => (
