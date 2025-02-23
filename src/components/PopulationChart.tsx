@@ -24,8 +24,8 @@ const PopulationChart = ({ data, selectedPrefNames }: Props) => {
       <h3>人口推移データ</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
-          <XAxis dataKey="year" />
-          <YAxis />
+          <XAxis dataKey="year" stroke="#ffffff" /> {/* X軸のラベルを白に */}
+          <YAxis stroke="#ffffff" /> {/* Y軸のラベルを白に */}
           <Tooltip />
           <Legend />
           {selectedPrefNames.map((selectedPrefName, index) => (
