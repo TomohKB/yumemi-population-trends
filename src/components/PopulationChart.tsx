@@ -20,7 +20,7 @@ type Props = {
 
 const PopulationChart = ({ data, selectedPrefNames }: Props) => {
   return (
-    <div className='chart-container'>
+    <div className="chart-container">
       <h3>人口推移データ</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart

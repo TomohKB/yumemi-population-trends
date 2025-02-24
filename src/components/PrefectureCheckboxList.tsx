@@ -6,8 +6,8 @@ type Prefecture = {
 }
 
 type PopulationEntry = {
-  year: number;
-  [key: string]: number | string;
+  year: number
+  [key: string]: number | string
 }
 
 type PopulationDetail = {
@@ -65,7 +65,7 @@ const PrefectureCheckboxList = ({
       .catch((error) => console.error('データ取得の失敗:', error))
   }, [])
 
-  const [populationData, setPopulationData] = useState<{ PopulationData }>({})
+  const [populationData, setPopulationData] = useState<PopulationData>({})
   // console.log(populationData);
 
   // 人口データを取得する関数
@@ -124,7 +124,7 @@ const PrefectureCheckboxList = ({
     const mergedData =
       populationData[selectedPrefs[0]]?.data
         ?.find((category) => category.label === '総人口')
-        ?.data.map((yearData) => {
+        ?.data.map((yearData: PopulationDetail) => {
           // console.log('🔍 item の構造:', item) // item の中身を確認
           // console.log('🟢 item.year:', item?.year) // item.year を確認
           const newData: { [key: string]: number | string } = {
@@ -176,7 +176,14 @@ const PrefectureCheckboxList = ({
           prefectures.find((p) => p.prefCode === prefCode)?.prefName || '不明'
       )
     )
-  }, [selectedPrefs, populationData, selectedCategory])
+  }, [
+    selectedPrefs,
+    populationData,
+    selectedCategory,
+    prefectures,
+    setMergedData,
+    setSelectedPrefNames,
+  ])
 
   const populationCategories = [
     '総人口',
@@ -188,7 +195,8 @@ const PrefectureCheckboxList = ({
   return (
     <div>
       <h2>都道府県の選択</h2>
-      <div className='prefecture-list'
+      <div
+        className="prefecture-list"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', // 自動調整のグリッド
@@ -220,7 +228,7 @@ const PrefectureCheckboxList = ({
         ))}
       </div>
       <h3>人口の種類</h3>
-      <div className='radio-group'>
+      <div className="radio-group">
         {populationCategories.map((category) => (
           <label key={category}>
             <input

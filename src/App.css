@@ -58,6 +58,7 @@
   max-width: 1200px; /* PCでの最大幅 */
   min-width: 300px; /* スマホで見切れないように */
   margin: auto; /* 中央揃え */
+  align-items: center;
 }
 
 /* スマホ（600px以下）のとき */
@@ -69,12 +70,13 @@
 }
 
 .radio-group {
-  /* display: flex; */
-  align-items: center;
+  display: flex;
+  align-items: center; /*縦方向の中央揃え*/
+  justify-content: center; /*横方向の中央揃え*/
   gap: 10px;
 }
 
-@media screen  and (max-width: 600px) {
+@media screen and (max-width: 600px) {
   .radio-group {
     flex-direction: column;
   }
