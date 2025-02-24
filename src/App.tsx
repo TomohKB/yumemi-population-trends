@@ -2,6 +2,8 @@ import { useState } from 'react'
 import './App.css'
 import PrefectureCheckboxList from './components/PrefectureCheckboxList'
 import PopulationChart from './components/PopulationChart'
+import type { PopulationEntry } from './components/PrefectureCheckboxList'
+
 
 function App() {
   const [mergedData, setMergedData] = useState<PopulationEntry[]>([]) // グラフ用のデータ

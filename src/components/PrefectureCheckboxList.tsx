@@ -5,7 +5,7 @@ type Prefecture = {
   prefName: string
 }
 
-type PopulationEntry = {
+export type PopulationEntry = {
   year: number
   [key: string]: number | string
 }
