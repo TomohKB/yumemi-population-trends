@@ -26,7 +26,7 @@ type PopulationData = {
 
 // Propsの型を定義（App.tsx から受け取る関数）
 type Props = {
-  setMergedData: (data: PopulationEntry) => void
+  setMergedData: (data: PopulationEntry[]) => void
   setSelectedPrefNames: (names: string[]) => void
   selectedCategory: string
   setSelectedCategory: (category: string) => void
@@ -114,59 +114,55 @@ const PrefectureCheckboxList = ({
     // console.log('現在の populationData:', populationData)
     // console.log('現在の selectedPrefs:', selectedPrefs)
     if (selectedPrefs.length === 0) {
-      setMergedData([]) // チェックがない場合は空配列
+      setMergedData([] as PopulationEntry[]) // チェックがない場合は空配列
       return
     }
 
     console.log('現在の selectedPrefs:', selectedPrefs)
     console.log('現在の populationData:', populationData)
 
-    const mergedData =
+    // 選択された都道府県の人口データを統合する
+    const mergedData: PopulationEntry[] =
       populationData[selectedPrefs[0]]?.data
-        ?.find((category) => category.label === '総人口')
+        ?.find((category) => category.label === selectedCategory) // 選択された人口カテゴリ（例: 総人口）
         ?.data.map((yearData: PopulationDetail) => {
-          // console.log('🔍 item の構造:', item) // item の中身を確認
-          // console.log('🟢 item.year:', item?.year) // item.year を確認
-          const newData: { [key: string]: number | string } = {
-            year: yearData.year,
-          } // 年を追加
+          // 各年のデータを格納するオブジェクトを作成
+          const newData: PopulationEntry = {
+            year: yearData.year, // 年を格納
+          }
 
-          //選択された都道府県ごとに "総人口" のデータを取得する処理
+          // 選択された都道府県ごとにデータを取得し、格納する
           selectedPrefs.forEach((selectedPref) => {
-            // console.log(`現在の ${selectedPref} のデータ:`, populationData[selectedPref]?.data);
-            // console.log(`現在処理中の都道府県コード:`, selectedPref)
+            // 指定された都道府県のデータを取得
             const popData = populationData[selectedPref]?.data?.find(
-              (category) => category.label === selectedCategory
-            )?.data //dataがあったらpopDataに入る
-            // console.log('現在の総人口データ:', popData)
+              (category) => category.label === selectedCategory // ユーザーが選択した人口種別
+            )?.data
+
+            // データが存在する場合のみ処理
             if (popData) {
-              // console.log(
-              //   'popData の year 一覧:',
-              //   popData.map((p) => p.year),
-              // )
-              // console.log(`item.year: ${item.year}`)
+              // 該当する年のデータを取得
               const matchedYearData = popData.find(
                 (p) => p.year === yearData.year
               )
-              // console.log(`年 ${item.year} のデータ:`, yearData)
-              //popDataのp.yearとitem.yearが同じだったら格納する
 
-              // if (!yearData) {
-              //   console.log(
-              //     `⚠️ yearData が見つかりませんでした: item.year = ${item.year}`,
-              //   )
-              // }
-              newData[
+              // 都道府県名を取得（prefCode から探す）
+              const prefName =
                 prefectures.find((p) => p.prefCode === selectedPref)
                   ?.prefName || '不明'
-              ] = matchedYearData ? matchedYearData.value : 0
+
+              // `matchedYearData` があれば値を格納、なければ 0 をセット
+              newData[prefName] = matchedYearData ? matchedYearData.value : 0
             }
           })
-          return newData
-        }) || []
 
+          // 1年分のデータを返す
+          return newData
+        }) || [] // データがない場合は空配列を返す
+
+    // デバッグ用ログ（コンソールで確認）
     console.log('現在の mergedData:', mergedData)
 
+    // 統合したデータを `setMergedData` にセット
     setMergedData(mergedData)
 
     // 都道府県名リストを更新

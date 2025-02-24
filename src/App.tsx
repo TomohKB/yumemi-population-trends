@@ -4,7 +4,7 @@ import PrefectureCheckboxList from './components/PrefectureCheckboxList'
 import PopulationChart from './components/PopulationChart'
 
 function App() {
-  const [mergedData, setMergedData] = useState([]) // グラフ用のデータ
+  const [mergedData, setMergedData] = useState<PopulationEntry[]>([]) // グラフ用のデータ
   const [selectedPrefNames, setSelectedPrefNames] = useState<string[]>([]) // 選択された都道府県名
   const [selectedCategory, setSelectedCategory] = useState('総人口')
 
