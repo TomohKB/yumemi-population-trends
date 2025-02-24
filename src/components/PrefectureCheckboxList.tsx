@@ -7,7 +7,7 @@ type Prefecture = {
 
 export type PopulationEntry = {
   year: number
-  [key: string]: number | string
+  [key: string]: number;
 }
 
 type PopulationDetail = {
