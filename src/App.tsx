@@ -1,26 +1,45 @@
+// App.tsx（状態管理 & フックの利用）
+// ✅ App.tsx では 都道府県のデータ取得 (usePrefectures) や 人口データ管理 (usePopulationData) を担当し、
+// ✅ PrefectureCheckboxList.tsx にデータを渡すだけ。
 import { useState } from 'react'
-import './App.css'
 import PrefectureCheckboxList from './components/PrefectureCheckboxList'
 import PopulationChart from './components/PopulationChart'
-import type { PopulationEntry } from './components/PrefectureCheckboxList'
+import { usePrefectures } from './hooks/usePrefectures'
+import { usePopulationData } from './hooks/usePopulationData'
+import './App.css'
 
 
 function App() {
-  const [mergedData, setMergedData] = useState<PopulationEntry[]>([]) // グラフ用のデータ
-  const [selectedPrefNames, setSelectedPrefNames] = useState<string[]>([]) // 選択された都道府県名
+  const { prefectures } = usePrefectures()
+  const [selectedPrefs, setSelectedPrefs] = useState<number[]>([])
   const [selectedCategory, setSelectedCategory] = useState('総人口')
+
+  // 人口データ取得フックを呼び出し
+  const { mergedData, selectedPrefNames } = usePopulationData(
+    selectedPrefs,
+    selectedCategory,
+    prefectures
+  )
+
+  // チェックボックスの変更処理
+  const handleCheck = (prefCode: number, checked: boolean) => {
+    if (checked) {
+      setSelectedPrefs((prev) => [...prev, prefCode])
+    } else {
+      setSelectedPrefs((prev) => prev.filter((p) => p !== prefCode))
+    }
+  }
 
   return (
     <div>
       <h1>都道府県別人口推移</h1>
-      {/* PrefectureCheckboxList に setMergedData を渡す */}
       <PrefectureCheckboxList
-        setMergedData={setMergedData}
-        setSelectedPrefNames={setSelectedPrefNames}
+        prefectures={prefectures}
+        selectedPrefs={selectedPrefs}
+        onCheck={handleCheck}
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
       />
-      {/* PopulationChart にデータを渡す */}
       <PopulationChart
         data={mergedData}
         selectedPrefNames={selectedPrefNames}
