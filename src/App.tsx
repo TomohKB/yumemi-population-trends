@@ -8,7 +8,6 @@ import { usePrefectures } from './hooks/usePrefectures'
 import { usePopulationData } from './hooks/usePopulationData'
 import './App.css'
 
-
 function App() {
   const { prefectures } = usePrefectures()
   const [selectedPrefs, setSelectedPrefs] = useState<number[]>([])

@@ -1,14 +1,16 @@
 // PopulationChart.tsx(グラフの描写)
 
+// `recharts` から必要なコンポーネントをインポート
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts'
+  LineChart,          // 折れ線グラフ (Line Chart) のコンポーネント
+  Line,               // 折れ線 (データの線) を描画するコンポーネント
+  XAxis,              // X軸 (横軸) の設定・表示を担当
+  YAxis,              // Y軸 (縦軸) の設定・表示を担当
+  Tooltip,            // グラフ上にカーソルを置いた時に詳細情報を表示するコンポーネント
+  Legend,             // グラフの凡例 (どの色が何のデータかを示す) を表示するコンポーネント
+  ResponsiveContainer // グラフのサイズを親要素に合わせてレスポンシブ対応するコンポーネント
+} from 'recharts';
+
 
 type PrefectureData = {
   year: number

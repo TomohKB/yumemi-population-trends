@@ -9,14 +9,14 @@
   background-color: #121212; /* ダークモード風 */
 }
 
-/* 🌟 ヘッダーのスタイル */
+/* ヘッダーのスタイル */
 h1 {
   font-size: 2rem;
   margin-bottom: 1.5rem;
   color: #ffffff;
 }
 
-/* 🏯 都道府県リストのデザイン */
+/* 都道府県リストのデザイン */
 .prefecture-list {
   display: flex;
   flex-wrap: wrap;
@@ -46,7 +46,7 @@ h1 {
   accent-color: #61dafb; /* チェックボックスの色 */
 }
 
-/* 📱 スマホ（600px以下）のとき */
+/* スマホ（600px以下）のとき */
 @media screen and (max-width: 600px) {
   .prefecture-list {
     flex-direction: column;
@@ -54,7 +54,7 @@ h1 {
   }
 }
 
-/* 📊 グラフのコンテナ */
+/* グラフのコンテナ */
 .chart-container {
   width: 100%;
   max-width: 800px; /* PCでの最大幅 */
@@ -85,7 +85,7 @@ h1 {
   }
 }
 
-/* 🎛️ 人口種類のラジオボタン */
+/* 人口種類のラジオボタン */
 .radio-group {
   display: flex;
   align-items: center;
@@ -110,26 +110,26 @@ h1 {
   accent-color: #ff7300;
 }
 
-/* 📱 スマホ時のラジオボタン */
+/* スマホ時のラジオボタン */
 @media screen and (max-width: 600px) {
   .radio-group {
     flex-direction: column;
   }
 }
 
-/* 🌟 凡例（Legend）のデザイン */
+/* 凡例（Legend）のデザイン */
 .recharts-legend-item {
   font-size: 14px;
   font-weight: bold;
 }
 
-/* 🎨 ホバー時のエフェクト */
+/* ホバー時のエフェクト */
 .prefecture-list label:hover,
 .radio-group label:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* 🛠️ 開発用デバッグ用 */
+/*  開発用デバッグ用 */
 .debug {
   border: 1px dashed red;
 }

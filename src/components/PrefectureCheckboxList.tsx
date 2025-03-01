@@ -12,8 +12,8 @@ type Props = {
   prefectures: Prefecture[]
   selectedPrefs: number[]
   onCheck: (prefCode: number, checked: boolean) => void
-  selectedCategory: string // ✅ 追加（ラジオボタンの選択状態）
-  setSelectedCategory: (category: string) => void // ✅ 追加（ラジオボタンの変更関数）
+  selectedCategory: string // （ラジオボタンの選択状態）
+  setSelectedCategory: (category: string) => void // （ラジオボタンの変更関数）
 }
 
 const PrefectureCheckboxList: React.FC<Props> = ({
@@ -47,7 +47,7 @@ const PrefectureCheckboxList: React.FC<Props> = ({
         ))}
       </div>
 
-      {/* ✅ ラジオボタンを追加（人口の種類選択） */}
+      {/* ラジオボタンを追加（人口の種類選択） */}
       <h3>人口の種類</h3>
       <div className="radio-group">
         {populationCategories.map((category) => (
